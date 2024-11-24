@@ -1,0 +1,5 @@
+module CSPICE [system] {
+    header "SpiceUsr.h"   // Main header file
+    export *
+    link "cspice"
+}

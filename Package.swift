@@ -6,16 +6,37 @@ import PackageDescription
 let package = Package(
     name: "SwiftSPICE",
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "SwiftSPICE",
-            targets: ["SwiftSPICE"]),
+            targets: ["SwiftSPICE"]
+        ),
+        .executable(
+            name: "SwiftSPICEExecutable",
+            targets: ["SwiftSPICEExecutable"]
+        ),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
+        // C target for CSPICE library with headers
         .target(
-            name: "SwiftSPICE"),
+            name: "CSPICE",
+            path: "Sources/cspice",
+            publicHeadersPath: "include",
+            linkerSettings: [
+                .unsafeFlags(["-L", "Sources/cspice", "-lcspice"])
+            ]
+        ),
+        // Swift target that depends on the C target
+        .target(
+            name: "SwiftSPICE",
+            dependencies: ["CSPICE"],
+            resources: [
+                .process("Resources/de432s.bsp")
+            ]
+        ),
+        .executableTarget(
+            name: "SwiftSPICEExecutable",
+            dependencies: ["SwiftSPICE"]
+        ),
         .testTarget(
             name: "SwiftSPICETests",
             dependencies: ["SwiftSPICE"]
