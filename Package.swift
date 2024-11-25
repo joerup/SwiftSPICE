@@ -16,7 +16,6 @@ let package = Package(
         ),
     ],
     targets: [
-        // C target for CSPICE library with headers
         .target(
             name: "CSPICE",
             path: "Sources/cspice",
@@ -25,17 +24,16 @@ let package = Package(
                 .unsafeFlags(["-L", "Sources/cspice", "-lcspice"])
             ]
         ),
-        // Swift target that depends on the C target
         .target(
             name: "SwiftSPICE",
-            dependencies: ["CSPICE"],
-            resources: [
-                .process("Resources/de432s.bsp")
-            ]
+            dependencies: ["CSPICE"]
         ),
         .executableTarget(
             name: "SwiftSPICEExecutable",
-            dependencies: ["SwiftSPICE"]
+            dependencies: ["SwiftSPICE"],
+            resources: [
+                .process("Resources/de432s.bsp")
+            ]
         ),
         .testTarget(
             name: "SwiftSPICETests",
