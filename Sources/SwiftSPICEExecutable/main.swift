@@ -11,7 +11,7 @@ import Foundation
 let kernelName = "de432s"
 
 guard CommandLine.argc == 3 else {
-    print("Usage: SwiftSPICE <targetID> <referenceID>")
+    print("Usage: <targetID> <referenceID>")
     exit(1)
 }
 guard let target = Int(CommandLine.arguments[1]), let reference = Int(CommandLine.arguments[2]) else {

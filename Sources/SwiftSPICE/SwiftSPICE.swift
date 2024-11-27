@@ -10,6 +10,8 @@ import Foundation
 
 public struct SPICE {
     
+    private static var kernels: Set<String> = []
+    
     /// Loads a SPICE kernel into the system.
     /// - Parameter filePath: The full path to the kernel file.
     /// - Throws: An error if the kernel cannot be loaded.
@@ -20,6 +22,9 @@ public struct SPICE {
         guard let path = filePathCString else {
             throw SPICEError.invalidPath(filePath)
         }
+        
+        // Store the kernel path
+        kernels.insert(filePath)
         
         // Load the kernel
         furnsh_c(path)
@@ -39,6 +44,9 @@ public struct SPICE {
             throw SPICEError.invalidPath(filePath)
         }
         
+        // Remove the kernel path
+        kernels.remove(filePath)
+        
         // Unload the kernel
         unload_c(path)
         
@@ -49,6 +57,9 @@ public struct SPICE {
     /// Clears all loaded SPICE kernels from the system.
     /// - Throws: An error if the operation fails.
     public static func clearKernels() throws {
+        
+        // Remove all stored kernel paths
+        kernels.removeAll()
         
         // Clear all loaded kernels
         kclear_c()
