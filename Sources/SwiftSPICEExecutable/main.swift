@@ -26,8 +26,14 @@ guard let kernelURL = Bundle.module.url(forResource: kernelName, withExtension: 
 do {
     try SPICE.loadKernel(kernelURL.path)
     
-    let state = try SPICE.getState(target: target, reference: reference)
+    guard let targetName = SPICE.objectName(for: target), let referenceName = SPICE.objectName(for: reference) else {
+        throw SPICEError.spiceError("Object could not be found")
+    }
+    guard let state = SPICE.getState(target: target, reference: reference) else {
+        throw SPICEError.spiceError("State could not be found")
+    }
     
+    print("State for \(targetName) relative to \(referenceName):")
     print("Position: \(state.x), \(state.y), \(state.z)")
     print("Velocity: \(state.vx), \(state.vy), \(state.vz)")
     

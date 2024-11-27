@@ -18,7 +18,7 @@ public struct SPICE {
         
         // Ensure the file path is valid
         guard let path = filePathCString else {
-            throw KernelManagerError.invalidPath(filePath)
+            throw SPICEError.invalidPath(filePath)
         }
         
         // Load the kernel
@@ -36,7 +36,7 @@ public struct SPICE {
         
         // Ensure the file path is valid
         guard let path = filePathCString else {
-            throw KernelManagerError.invalidPath(filePath)
+            throw SPICEError.invalidPath(filePath)
         }
         
         // Unload the kernel
@@ -68,7 +68,7 @@ public struct SPICE {
     ///
     /// - Throws: Throws an error if the SPICE kernel cannot provide the state vector for the specified objects or time.
     ///
-    public static func getState(target: Int, reference: Int, date: Date = Date()) throws -> StateVector {
+    public static func getState(target: Int, reference: Int, date: Date = Date()) -> StateVector? {
         
         let epoch = date.timeIntervalSince(.j2000)
         
@@ -90,6 +90,73 @@ public struct SPICE {
         return state
     }
     
+    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific date.
+    ///
+    /// - Parameters:
+    ///   - target: The name of the target object (e.g., "Earth", "Mars").
+    ///   - reference: The name of the reference object (e.g., "Sun", "Moon").
+    ///   - date: The date for which the state vector is to be retrieved. Defaults to the current date if not provided.
+    ///
+    /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference.
+    ///
+    /// - Throws: Throws an error if the SPICE kernel cannot provide the state vector for the specified objects or time.
+    ///
+    public static func getState(target: String, reference: String, date: Date = Date()) -> StateVector? {
+        
+        let epoch = date.timeIntervalSince(.j2000)
+        
+        let ptrToState = UnsafeMutablePointer<SpiceDouble>.allocate(capacity: 6)
+        let ptrToLtTime = UnsafeMutablePointer<SpiceDouble>.allocate(capacity: 1)
+        
+        defer {
+            ptrToState.deinitialize(count: 6)
+            ptrToState.deallocate()
+            
+            ptrToLtTime.deinitialize(count: 1)
+            ptrToLtTime.deallocate()
+        }
+        
+        spkezr_c(target, epoch, "J2000", "NONE", reference, ptrToState, ptrToLtTime)
+        
+        let state = StateVector(x: ptrToState[0], y: ptrToState[1], z: ptrToState[2], vx: ptrToState[3], vy: ptrToState[4], vz: ptrToState[5])
+        
+        return state
+    }
+    
+    /// Converts a celestial object name to its corresponding SPICE integer ID.
+    /// - Parameter name: The name of the celestial object (e.g., "Earth", "Mars").
+    /// - Returns: The integer ID of the object, or `nil` if the name cannot be converted.
+    /// - Throws: An error if the conversion fails.
+    public static func objectID(for name: String) -> Int? {
+        var id: SpiceInt = 0
+        var found: SpiceBoolean = SPICEFALSE
+
+        bodn2c_c(name, &id, &found)
+
+        guard found == SPICETRUE else {
+            return nil
+        }
+
+        return Int(id)
+    }
+
+    /// Converts a SPICE integer ID to its corresponding celestial object name.
+    /// - Parameter id: The integer ID of the celestial object (e.g., 399 for Earth).
+    /// - Returns: The name of the object, or `nil` if the ID cannot be converted.
+    /// - Throws: An error if the conversion fails.
+    public static func objectName(for id: Int) -> String? {
+        var name = [CChar](repeating: 0, count: 36)
+        var found: SpiceBoolean = SPICEFALSE
+
+        bodc2n_c(SpiceInt(id), 36, &name, &found)
+        
+        guard found == SPICETRUE else {
+            return nil
+        }
+
+        return String(cString: name)
+    }
+
     // Helper function to check for SPICE errors and throw appropriate Swift errors.
     private static func checkSPICEError() throws {
         if failed_c() == SPICETRUE {
@@ -107,13 +174,13 @@ public struct SPICE {
             // Convert the array of bytes to a Swift String
             let errorString = String(decoding: byteArray, as: UTF8.self)
 
-            throw KernelManagerError.spiceError(errorString)
+            throw SPICEError.spiceError(errorString)
         }
     }
 }
 
 /// Errors specific to the KernelManager
-public enum KernelManagerError: Error {
+public enum SPICEError: Error {
     case invalidPath(String)
     case spiceError(String)
 }

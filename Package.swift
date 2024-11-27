@@ -4,6 +4,12 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftSPICE",
+    platforms: [
+        .iOS(.v15),
+        .macOS(.v12),
+        .tvOS(.v15),
+        .watchOS(.v8)
+    ],
     products: [
         .library(
             name: "SwiftSPICE",
@@ -35,7 +41,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftSPICETests",
-            dependencies: ["SwiftSPICE"]
+            dependencies: ["SwiftSPICE"],
+            resources: [
+                .process("Resources/de432s.bsp")
+            ]
         ),
     ]
 )
