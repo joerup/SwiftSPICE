@@ -1,7 +1,5 @@
 # SwiftSPICE
 
-**Swift Package Manager Compatible**
-
 SwiftSPICE is a Swift package to interact with the SPICE Toolkit.
 https://naif.jpl.nasa.gov/naif/toolkit.html
 
@@ -26,7 +24,7 @@ dependencies: [
 ]
 ```
 
-Then, add "SwiftSPICE" to your target's dependencies:
+Then, add `SwiftSPICE` to your target's dependencies:
 
 ```
 .target(
@@ -38,38 +36,37 @@ Then, add "SwiftSPICE" to your target's dependencies:
 
 ## Usage
 
-### Importing the Package
-
-First, import **SwiftSPICE** into your Swift file:
+Import **SwiftSPICE** into your Swift file:
 
 ```
 import SwiftSPICE
 ```
 
-### Basic Usage
-
-Load a kernel into the system:
+Load a kernel from the SPK file `de432s.bsp`:
 
 ```
-try SPICE.loadKernel("de432s.bsp")
+guard let kernelURL = Bundle.main.url(forResource: "de432s", withExtension: "bsp") else {
+    return
+}
+try SPICE.loadKernel(kernelURL.path)
 ```
 
-Get the current state of Earth relative to the Solar System Barycenter (SSB):
+Get the current state of the **Earth Barycenter** relative to the **Solar System Barycenter**:
 
 ```
 let state = SPICE.getState(target: 3, reference: 0)
-let state = SPICE.getState(target: "Earth", reference: "SSB")
+let state = SPICE.getState(target: "Earth Barycenter", reference: "Solar System Barycenter")
 ```
 
-This returns a `StateVector` which contains **position** and **velocity** components.
+`state` is a `StateVector` which contains **position** and **velocity** components.
 
-When you're done, unload the kernel:
+Unload the kernel:
 
 ```
-try SPICE.unloadKernel("de432s.bsp")
+try SPICE.unloadKernel(kernelURL.path)
 ```
 
-or clear all kernels:
+Or unload all kernels:
 
 ```
 try SPICE.clearKernels()
