@@ -1,0 +1,4 @@
+module CSPICE {
+    header "SpiceUsr.h" // Replace with the main CSPICE header file if different
+    export *
+}
