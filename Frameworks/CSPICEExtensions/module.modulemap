@@ -1,0 +1,4 @@
+module CSPICEExtensions {
+    header "CSPICEExtensions.h"
+    export *
+}

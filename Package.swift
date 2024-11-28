@@ -23,13 +23,17 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "CSPICE",
-            path: "Sources/SwiftSPICE/CSPICE.xcframework"
+            path: "Frameworks/CSPICE.xcframework"
+        ),
+        .target(
+            name: "CSPICEExtensions",
+            path: "Frameworks/CSPICEExtensions",
+            publicHeadersPath: "."
         ),
         .target(
             name: "SwiftSPICE",
-            dependencies: ["CSPICE"],
-            path: "Sources/SwiftSPICE",
-            exclude: ["CSPICE.xcframework"]
+            dependencies: ["CSPICE", "CSPICEExtensions"],
+            path: "Sources/SwiftSPICE"
         ),
         .executableTarget(
             name: "SwiftSPICEExecutable",

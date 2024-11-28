@@ -29,11 +29,11 @@ do {
     guard let targetName = SPICE.objectName(for: target), let referenceName = SPICE.objectName(for: reference) else {
         throw SPICEError.spiceError("Object could not be found")
     }
+    print("State for \(targetName) (\(target)) relative to \(referenceName) (\(reference)):")
+    
     guard let state = SPICE.getState(target: target, reference: reference) else {
         throw SPICEError.spiceError("State could not be found")
     }
-    
-    print("State for \(targetName) relative to \(referenceName):")
     print("Position: \(state.x), \(state.y), \(state.z)")
     print("Velocity: \(state.vx), \(state.vy), \(state.vz)")
     

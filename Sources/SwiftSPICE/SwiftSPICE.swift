@@ -6,11 +6,13 @@
 //
 
 import CSPICE
+import CSPICEExtensions
 import Foundation
 
 public struct SPICE {
     
     private static var kernels: Set<String> = []
+    private static var kernelMap: [Int: String] = [0 : "default"]
     
     /// Loads a SPICE kernel into the system.
     /// - Parameter filePath: The full path to the kernel file.
@@ -29,8 +31,22 @@ public struct SPICE {
         // Load the kernel
         furnsh_c(path)
         
+        // Fetch object IDs from the kernel
+        var ids = [Int32](repeating: 0, count: 100)
+        var count: Int32 = 0
+        
+        // Call the C helper function
+        GetSPKObjectIDs(path, &ids, &count)
+        
+        // Populate the dictionary
+        for i in 0..<Int(count) {
+            let objectID = Int(ids[i])
+            kernelMap[objectID] = filePath
+        }
+        
         // Check for SPICE errors
         try checkSPICEError()
+        
     }
     
     /// Unloads a specific SPICE kernel from the system.
@@ -73,15 +89,18 @@ public struct SPICE {
     /// - Parameters:
     ///   - target: The integer ID of the target object (e.g., a planet or moon).
     ///   - reference: The integer ID of the reference object (e.g., the Sun or Earth).
-    ///   - date: The date for which the state vector is to be retrieved. Defaults to the current date if not provided.
+    ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
     ///
     /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference.
     ///
     /// - Throws: Throws an error if the SPICE kernel cannot provide the state vector for the specified objects or time.
     ///
-    public static func getState(target: Int, reference: Int, date: Date = Date()) -> StateVector? {
+    public static func getState(target: Int, reference: Int, time: Date = Date()) -> StateVector? {
         
-        let epoch = date.timeIntervalSince(.j2000)
+        let epoch = time.timeIntervalSince(.j2000)
+        
+        guard let targetFile = kernelMap[target], isValid(targetFile, id: target, epoch: epoch) else { return nil }
+        guard let referenceFile = kernelMap[reference], isValid(referenceFile, id: reference, epoch: epoch) else { return nil }
         
         let ptrToState = UnsafeMutablePointer<SpiceDouble>.allocate(capacity: 6)
         let ptrToLtTime = UnsafeMutablePointer<SpiceDouble>.allocate(capacity: 1)
@@ -106,32 +125,16 @@ public struct SPICE {
     /// - Parameters:
     ///   - target: The name of the target object (e.g., "Earth", "Mars").
     ///   - reference: The name of the reference object (e.g., "Sun", "Moon").
-    ///   - date: The date for which the state vector is to be retrieved. Defaults to the current date if not provided.
+    ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
     ///
     /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference.
     ///
     /// - Throws: Throws an error if the SPICE kernel cannot provide the state vector for the specified objects or time.
     ///
-    public static func getState(target: String, reference: String, date: Date = Date()) -> StateVector? {
+    public static func getState(target: String, reference: String, time: Date = Date()) -> StateVector? {
+        guard let targetID = objectID(for: target), let referenceID = objectID(for: reference) else { return nil }
         
-        let epoch = date.timeIntervalSince(.j2000)
-        
-        let ptrToState = UnsafeMutablePointer<SpiceDouble>.allocate(capacity: 6)
-        let ptrToLtTime = UnsafeMutablePointer<SpiceDouble>.allocate(capacity: 1)
-        
-        defer {
-            ptrToState.deinitialize(count: 6)
-            ptrToState.deallocate()
-            
-            ptrToLtTime.deinitialize(count: 1)
-            ptrToLtTime.deallocate()
-        }
-        
-        spkezr_c(target, epoch, "J2000", "NONE", reference, ptrToState, ptrToLtTime)
-        
-        let state = StateVector(x: ptrToState[0], y: ptrToState[1], z: ptrToState[2], vx: ptrToState[3], vy: ptrToState[4], vz: ptrToState[5])
-        
-        return state
+        return getState(target: targetID, reference: referenceID, time: time)
     }
     
     /// Converts a celestial object name to its corresponding SPICE integer ID.
@@ -166,6 +169,27 @@ public struct SPICE {
         }
 
         return String(cString: name)
+    }
+
+    // Helper function to check if object ID is present in ephemeris for given epoch.
+    private static func isValid(_ filePath: String, id: Int, epoch: Double) -> Bool {
+        if id == 0 {
+            return true
+        }
+        
+        guard let cFilename = filePath.cString(using: .utf8) else {
+            return false
+        }
+        
+        return cFilename.withUnsafeBufferPointer { bufferPointer in
+            guard let baseAddress = bufferPointer.baseAddress else {
+                return false
+            }
+            
+            // Call the C function and return the result
+            let result = BeEpochInSPK(baseAddress, SpiceInt(id), epoch)
+            return result == SPICETRUE
+        }
     }
 
     // Helper function to check for SPICE errors and throw appropriate Swift errors.
