@@ -170,8 +170,14 @@ public struct SPICE {
 
         return String(cString: name)
     }
+    
+    /// Retrieves all objects currently loaded in kernels.
+    /// - Returns: A list of integer IDs of all currently loaded objects.
+    public static func getLoadedObjects() -> [Int] {
+        return Array(kernelMap.keys)
+    }
 
-    // Helper function to check if object ID is present in ephemeris for given epoch.
+    // Helper function to check if object id is present in filePath SDK for given epoch.
     private static func isValid(_ filePath: String, id: Int, epoch: Double) -> Bool {
         if id == 0 {
             return true
