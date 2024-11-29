@@ -90,13 +90,13 @@ public struct SPICE {
     ///   - target: The integer ID of the target object (e.g., a planet or moon).
     ///   - reference: The integer ID of the reference object (e.g., the Sun or Earth).
     ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
-    ///   - ref: The reference frame in which the state vector should be computed (e.g., "J2000", "ECLIPJ2000"). Defaults to "J2000".
+    ///   - frame: The reference frame in which the state vector should be computed (e.g., "J2000", "ECLIPJ2000"). Defaults to "J2000".
     ///   - abcorr: The aberration correction to apply (e.g., "NONE", "LT", "LT+S"). Defaults to "NONE".
     ///
     /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference,
     ///   or `nil` if the state cannot be computed.
     ///
-    public static func getState(target: Int, reference: Int, time: Date = Date(), ref: String = "J2000", abcorr: String = "NONE") -> StateVector? {
+    public static func getState(target: Int, reference: Int, time: Date = Date(), frame: String = "J2000", abcorr: String = "NONE") -> StateVector? {
         
         let epoch = time.timeIntervalSince(.j2000)
         
@@ -114,7 +114,7 @@ public struct SPICE {
             ptrToLtTime.deallocate()
         }
         
-        spkez_c(SpiceInt(target), epoch, "J2000", "None", SpiceInt(reference), ptrToState, ptrToLtTime)
+        spkez_c(SpiceInt(target), epoch, frame, abcorr, SpiceInt(reference), ptrToState, ptrToLtTime)
         
         let state = StateVector(x: ptrToState[0], y: ptrToState[1], z: ptrToState[2], vx: ptrToState[3], vy: ptrToState[4], vz: ptrToState[5])
         
@@ -133,10 +133,10 @@ public struct SPICE {
     /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference,
     ///   or `nil` if the state cannot be computed.
     ///
-    public static func getState(target: String, reference: String, time: Date = Date(), ref: String = "J2000", abcorr: String = "NONE") -> StateVector? {
+    public static func getState(target: String, reference: String, time: Date = Date(), frame: String = "J2000", abcorr: String = "NONE") -> StateVector? {
         guard let targetID = objectID(for: target), let referenceID = objectID(for: reference) else { return nil }
         
-        return getState(target: targetID, reference: referenceID, time: time, ref: ref, abcorr: abcorr)
+        return getState(target: targetID, reference: referenceID, time: time, frame: frame, abcorr: abcorr)
     }
     
     /// Converts a celestial object name to its corresponding SPICE integer ID.
