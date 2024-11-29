@@ -1,8 +1,8 @@
 //
-//  CSPICEExtensions.h
+//  SPKUtils.h
 //  SwiftSPICE
 //
-//  Created by Joe Rupertus on 11/28/24.
+//  Created by Joe Rupertus on 11/29/24.
 //
 
 #ifndef CSPICEEXTENSIONS_H

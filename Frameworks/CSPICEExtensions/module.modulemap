@@ -1,4 +1,4 @@
 module CSPICEExtensions {
-    header "CSPICEExtensions.h"
+    header "SPKUtils.h"
     export *
 }

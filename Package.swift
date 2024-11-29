@@ -28,7 +28,10 @@ let package = Package(
         .target(
             name: "CSPICEExtensions",
             path: "Frameworks/CSPICEExtensions",
-            publicHeadersPath: "."
+            publicHeadersPath: ".",
+            cSettings: [
+                .headerSearchPath("Headers")
+            ]
         ),
         .target(
             name: "SwiftSPICE",
