@@ -84,18 +84,19 @@ public struct SPICE {
         try checkSPICEError()
     }
     
-    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific date.
+    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific time.
     ///
     /// - Parameters:
     ///   - target: The integer ID of the target object (e.g., a planet or moon).
     ///   - reference: The integer ID of the reference object (e.g., the Sun or Earth).
     ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
+    ///   - ref: The reference frame in which the state vector should be computed (e.g., "J2000", "ECLIPJ2000"). Defaults to "J2000".
+    ///   - abcorr: The aberration correction to apply (e.g., "NONE", "LT", "LT+S"). Defaults to "NONE".
     ///
-    /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference.
+    /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference,
+    ///   or `nil` if the state cannot be computed.
     ///
-    /// - Throws: Throws an error if the SPICE kernel cannot provide the state vector for the specified objects or time.
-    ///
-    public static func getState(target: Int, reference: Int, time: Date = Date()) -> StateVector? {
+    public static func getState(target: Int, reference: Int, time: Date = Date(), ref: String = "J2000", abcorr: String = "NONE") -> StateVector? {
         
         let epoch = time.timeIntervalSince(.j2000)
         
@@ -120,27 +121,27 @@ public struct SPICE {
         return state
     }
     
-    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific date.
+    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific time.
     ///
     /// - Parameters:
     ///   - target: The name of the target object (e.g., "Earth", "Mars").
     ///   - reference: The name of the reference object (e.g., "Sun", "Moon").
     ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
+    ///   - ref: The reference frame in which the state vector should be computed (e.g., "J2000", "ECLIPJ2000"). Defaults to "J2000".
+    ///   - abcorr: The aberration correction to apply (e.g., "NONE", "LT", "LT+S"). Defaults to "NONE".
     ///
-    /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference.
+    /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference,
+    ///   or `nil` if the state cannot be computed.
     ///
-    /// - Throws: Throws an error if the SPICE kernel cannot provide the state vector for the specified objects or time.
-    ///
-    public static func getState(target: String, reference: String, time: Date = Date()) -> StateVector? {
+    public static func getState(target: String, reference: String, time: Date = Date(), ref: String = "J2000", abcorr: String = "NONE") -> StateVector? {
         guard let targetID = objectID(for: target), let referenceID = objectID(for: reference) else { return nil }
         
-        return getState(target: targetID, reference: referenceID, time: time)
+        return getState(target: targetID, reference: referenceID, time: time, ref: ref, abcorr: abcorr)
     }
     
     /// Converts a celestial object name to its corresponding SPICE integer ID.
     /// - Parameter name: The name of the celestial object (e.g., "Earth", "Mars").
     /// - Returns: The integer ID of the object, or `nil` if the name cannot be converted.
-    /// - Throws: An error if the conversion fails.
     public static func objectID(for name: String) -> Int? {
         var id: SpiceInt = 0
         var found: SpiceBoolean = SPICEFALSE
@@ -157,7 +158,6 @@ public struct SPICE {
     /// Converts a SPICE integer ID to its corresponding celestial object name.
     /// - Parameter id: The integer ID of the celestial object (e.g., 399 for Earth).
     /// - Returns: The name of the object, or `nil` if the ID cannot be converted.
-    /// - Throws: An error if the conversion fails.
     public static func objectName(for id: Int) -> String? {
         var name = [CChar](repeating: 0, count: 36)
         var found: SpiceBoolean = SPICEFALSE

@@ -35,7 +35,7 @@ let state = SPICE.getState(target: "Earth Barycenter", reference: "Solar System 
 Notes:
 - You can specify `target` and `reference` by **name** or **id**.
 - `state` is a `StateVector` which contains **position** and **velocity** components (accessed via `state.x`, `state.y`, `state.z`, `state.vx`, `state.vy`, `state.vz`).
-- You can also pass a `time` parameter of type `Date` to specify a timestamp. The default is the current time.
+- You can pass a `time` parameter of type `Date` to specify a timestamp. The default is the current time.
 - The `target` and `reference` objects must have ephemerides in one of the loaded SPK files at the specified time, otherwise it will return `nil`.
 
 When you're done, unload the kernels:
