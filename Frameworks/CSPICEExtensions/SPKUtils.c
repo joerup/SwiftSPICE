@@ -24,7 +24,7 @@ SpiceBoolean BeEpochInSPK(ConstSpiceChar *spkFilename, SpiceInt bodyID, SpiceDou
 }
 
 // Retrieves object IDs from a given SPK file
-void GetSPKObjectIDs(const char *spkFilename, SpiceInt *ids, SpiceInt *count) {
+void getSPKObjectIDs(ConstSpiceChar *spkFilename, SpiceInt *ids, SpiceInt *count) {
     #define MAX_IDS 1000
     SPICEINT_CELL(idset, MAX_IDS);
     

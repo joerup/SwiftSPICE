@@ -12,6 +12,6 @@
 
 SpiceBoolean BeEpochInSPK(ConstSpiceChar *spkFilename, SpiceInt bodyID, SpiceDouble epochPoint);
 
-void GetSPKObjectIDs(const char *spkFilename, SpiceInt *ids, SpiceInt *count);
+void getSPKObjectIDs(ConstSpiceChar *spkFilename, SpiceInt *ids, SpiceInt *count);
 
 #endif /* CSPICEEXTENSIONS_H */

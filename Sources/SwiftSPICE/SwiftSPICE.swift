@@ -36,7 +36,7 @@ public struct SPICE {
         var count: Int32 = 0
         
         // Call the C helper function
-        GetSPKObjectIDs(path, &ids, &count)
+        getSPKObjectIDs(path, &ids, &count)
         
         // Populate the dictionary
         for i in 0..<Int(count) {
