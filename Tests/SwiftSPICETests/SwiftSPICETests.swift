@@ -5,7 +5,7 @@ import Foundation
 @Test("Get state from SPICE")
 func getStateFromSPICE() async throws {
     
-    guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+    guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
         return
     }
 

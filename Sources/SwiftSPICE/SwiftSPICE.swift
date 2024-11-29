@@ -127,7 +127,7 @@ public struct SPICE {
     ///   - target: The name of the target object (e.g., "Earth", "Mars").
     ///   - reference: The name of the reference object (e.g., "Sun", "Moon").
     ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
-    ///   - ref: The reference frame in which the state vector should be computed (e.g., "J2000", "ECLIPJ2000"). Defaults to "J2000".
+    ///   - frame: The reference frame in which the state vector should be computed (e.g., "J2000", "ECLIPJ2000"). Defaults to "J2000".
     ///   - abcorr: The aberration correction to apply (e.g., "NONE", "LT", "LT+S"). Defaults to "NONE".
     ///
     /// - Returns: A `StateVector` struct containing the position (x, y, z) and velocity (vx, vy, vz) of the target relative to the reference,
