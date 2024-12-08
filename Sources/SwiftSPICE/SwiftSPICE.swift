@@ -220,7 +220,6 @@ public struct SPICE {
     }
 }
 
-/// Errors specific to the KernelManager
 public enum SPICEError: Error {
     case invalidPath(String)
     case spiceError(String)
