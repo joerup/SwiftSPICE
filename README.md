@@ -35,7 +35,34 @@ or
 let (stateVector, lightTime) = try SPICE.getState(target: "Earth Barycenter", reference: "Solar System Barycenter")
 ```
 
-When you're done, unload the kernels:
+Calculate the distance from **Jupiter** to the **Sun** on `2025-01-01`:
+
+```
+let date = Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 1))
+let (stateVector, _) = try SPICE.getState(target: "Jupiter", reference: "Sun", time: date)
+let distance = stateVector.distance
+```
+
+Find the speed of the **Moon** relative to **Earth** on `2024-04-08`:
+
+```
+let date = Calendar.current.date(from: DateComponents(year: 2024, month: 4, day: 8))
+let (stateVector, _) = try SPICE.getState(target: "Moon", reference: "Earth", time: date)
+let speed = stateVector.speed
+```
+
+Get the current state of **Venus** relative to **Mercury** in the **ecliptic frame**:
+
+```
+let (stateVector, _) = try SPICE.getState(target: 2, reference: 1, frame: .eclipticJ2000) 
+```
+
+Get the current state of **Saturn** relative to the **Sun** with **light time correction**:
+```
+let (stateVector, lightTime) = try SPICE.getState(target: "Saturn", reference: "Sun", abcorr: .lightTime)
+```
+
+When you're done, unload the kernels to free up memory:
 
 ```
 try SPICE.clearKernels()

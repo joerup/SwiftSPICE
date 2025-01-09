@@ -26,10 +26,10 @@ public struct StateVector: Equatable {
     
     public static let zero = Self(x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0)
     
-    public var positionMagnitude: Double {
+    public var distance: Double {
         return sqrt(x * x + y * y + z * z)
     }
-    public var velocityMagnitude: Double {
+    public var speed: Double {
         return sqrt(vx * vx + vy * vy + vz * vz)
     }
 }

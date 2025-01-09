@@ -25,19 +25,19 @@ extension SerializedSuite {
                 #expect(Bool(false), "state is nil")
                 return
             }
-            #expect(state1.positionMagnitude > 1e+8)
-            #expect(state1.positionMagnitude < 2e+8)
-            #expect(state1.velocityMagnitude > 28)
-            #expect(state1.velocityMagnitude < 31)
+            #expect(state1.distance > 1e+8)
+            #expect(state1.distance < 2e+8)
+            #expect(state1.distance > 28)
+            #expect(state1.distance < 31)
             
             guard let (state2, _) = try? SPICE.getState(target: "Earth Barycenter", reference: "Solar System Barycenter") else {
                 #expect(Bool(false), "state is nil")
                 return
             }
-            #expect(state2.positionMagnitude > 1e+8)
-            #expect(state2.positionMagnitude < 2e+8)
-            #expect(state2.velocityMagnitude > 28)
-            #expect(state2.velocityMagnitude < 31)
+            #expect(state2.distance > 1e+8)
+            #expect(state2.distance < 2e+8)
+            #expect(state2.distance > 28)
+            #expect(state2.distance < 31)
             
             let id1 = try SPICE.getObjectID(for: "Earth Barycenter")
             let id2 = try SPICE.getObjectID(for: "Solar System Barycenter")
@@ -95,7 +95,7 @@ extension SerializedSuite {
                 return
             }
             
-            #expect(state.positionMagnitude > 1e+8 && state.positionMagnitude < 2e+8, "Position magnitude out of expected range")
+            #expect(state.distance > 1e+8 && state.distance < 2e+8, "Position magnitude out of expected range")
             #expect(lightTime > 400, "Unexpected light time")
             
             try SPICE.clearKernels()
