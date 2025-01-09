@@ -1,5 +1,8 @@
 # SwiftSPICE
 
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjoerup%2FSwiftSPICE%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/joerup/SwiftSPICE)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjoerup%2FSwiftSPICE%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/joerup/SwiftSPICE)
+
 **SwiftSPICE** is a Swift package that provides a Swift-native interface for NASA's [SPICE Toolkit](https://naif.jpl.nasa.gov/naif/toolkit.html).
 
 The SPICE Toolkit, developed by NASA's Navigation and Ancillary Information Facility (NAIF), is widely used in space science and engineering applications. SwiftSPICE makes it easy to integrate these powerful capabilities directly into Swift-based apps and simulations.
