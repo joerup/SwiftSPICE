@@ -10,8 +10,6 @@
 
 #include "SpiceUsr.h"
 
-SpiceBoolean BeEpochInSPK(ConstSpiceChar *spkFilename, SpiceInt bodyID, SpiceDouble epochPoint);
-
 void getSPKObjectIDs(ConstSpiceChar *spkFilename, SpiceInt *ids, SpiceInt *count);
 
 #endif /* CSPICEEXTENSIONS_H */

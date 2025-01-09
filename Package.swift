@@ -43,14 +43,14 @@ let package = Package(
             dependencies: ["SwiftSPICE"],
             path: "Sources/SwiftSPICEExecutable",
             resources: [
-                .process("Resources/sample.bsp")
+                .process("Resources")
             ]
         ),
         .testTarget(
             name: "SwiftSPICETests",
             dependencies: ["SwiftSPICE"],
             resources: [
-                .process("Resources/sample.bsp")
+                .process("Resources")
             ]
         ),
     ]
