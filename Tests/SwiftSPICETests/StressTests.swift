@@ -8,7 +8,7 @@ extension SerializedSuite {
         // Test full lifecycle
         @Test("Full lifecycle")
         func fullLifecycle() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -54,7 +54,7 @@ extension SerializedSuite {
         // Test high-frequency state retrievals and long duration queries
         @Test("High-Frequency State Retrievals Over Long Durations")
         func highFrequencyAndLongDuration() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {

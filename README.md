@@ -1,71 +1,94 @@
 # SwiftSPICE
 
-SwiftSPICE is a Swift package to interact with the SPICE Toolkit.
+**SwiftSPICE** is a Swift package that provides a Swift-native interface for NASA's [SPICE Toolkit](https://naif.jpl.nasa.gov/naif/toolkit.html).
 
-https://naif.jpl.nasa.gov/naif/toolkit.html
+The SPICE Toolkit, developed by NASA's Navigation and Ancillary Information Facility (NAIF), is widely used in space science and engineering applications. SwiftSPICE makes it easy to integrate these powerful capabilities directly into Swift-based apps and simulations.
+
+To use SwiftSPICE, you'll need to load SPK (Spacecraft and Planet Kernel) files, which contain ephemeris data for celestial bodies.
+
+-- 
+
+## Setup
+
+Add **SwiftSPICE** to your Swift project:
+
+In your `Package.swift` file, add the following dependency:
+
+```
+dependencies: [
+    .package(url: "https://github.com/joerup/SwiftSPICE.git", from: "2.0.0")
+]
+```
+
+Or, if you're using Xcode, you can add the package by selecting:
+
+**File > Add Packages**
+Enter the URL of the **SwiftSPICE** repository: `https://github.com/joerup/SwiftSPICE.git`
+Choose the latest version and add it to your project.
 
 ---
 
-## Example Usage
+## Usage
 
-Import **SwiftSPICE** into your Swift file:
+Import `SwiftSPICE` into a Swift file:
 
 ```
 import SwiftSPICE
 ```
 
-Load a kernel from the SPK file `de432s.bsp` and the leapsecond file `naif0012.tls`:
+Before performing any calculations, load the necessary SPICE kernels. Load from an SPK file (e.g., `de432s.bsp`) and a leapsecond file (e.g., `naif0012.tls`):
 
 ```
 if let kernelURL = Bundle.main.url(forResource: "de432s", withExtension: "bsp") {
     try SPICE.loadKernel(kernelURL.path)
 }
-if let leapsecondURL = Bundle.main.url(forResource: "naif0012", withExtension: "tls") {
-    try SPICE.loadKernel(leapsecondURL.path)
+if let leapsecondKernelURL = Bundle.main.url(forResource: "naif0012", withExtension: "tls") {
+    try SPICE.loadKernel(leapsecondKernelURL.path)
 }
 ```
 
-Get the current state (position and velocity vectors), and the one-way light time, of the **Earth Barycenter** relative to the **Solar System Barycenter**:
+Once the kernels are loaded, you can directly access SPICE functions. For example, to get the state vector (position and velocity), and the light time, of the **Earth Barycenter** (ID 3) relative to the **Solar System Barycenter** (ID 0):
 
 ```
 let (stateVector, lightTime) = try SPICE.getState(target: 3, reference: 0)
-```
-or
-```
+// or, using names:
 let (stateVector, lightTime) = try SPICE.getState(target: "Earth Barycenter", reference: "Solar System Barycenter")
 ```
 
-Calculate the distance from **Jupiter** to the **Sun** on `2025-01-01`:
-
-```
-let date = Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 1))
-let (stateVector, _) = try SPICE.getState(target: "Jupiter", reference: "Sun", time: date)
-let distance = stateVector.distance
-```
-
-Find the speed of the **Moon** relative to **Earth** on `2024-04-08`:
-
-```
-let date = Calendar.current.date(from: DateComponents(year: 2024, month: 4, day: 8))
-let (stateVector, _) = try SPICE.getState(target: "Moon", reference: "Earth", time: date)
-let speed = stateVector.speed
-```
-
-Get the current state of **Venus** relative to **Mercury** in the **ecliptic frame**:
-
-```
-let (stateVector, _) = try SPICE.getState(target: 2, reference: 1, frame: .eclipticJ2000) 
-```
-
-Get the current state of **Saturn** relative to the **Sun** with **light time correction**:
-```
-let (stateVector, lightTime) = try SPICE.getState(target: "Saturn", reference: "Sun", abcorr: .lightTime)
-```
-
-When you're done, unload the kernels to free up memory:
+When you're done, unload the kernels to free up memory and avoid conflicts:
 
 ```
 try SPICE.clearKernels()
 ```
 
+--
 
+## Other Examples
+
+Calculate the distance from **Jupiter Barycenter** (ID 5) to the **Sun** (ID 10) on `2025-01-01`:
+
+```
+let date = Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 1))!
+let (stateVector, _) = try SPICE.getState(target: 5, reference: 10, time: date)
+let distance = stateVector.distance
+```
+
+Find the speed of the **Moon** relative to **Earth** on `2024-04-08` at `2:30:00 PM EDT`:
+
+```
+let date = Calendar.current.date(from: DateComponents(timeZone: TimeZone(abbreviation: "EDT"), year: 2024, month: 4, day: 8, hour: 14, minute: 30, second: 0))!
+let (stateVector, _) = try SPICE.getState(target: "Moon", reference: "Earth", time: date)
+let speed = stateVector.speed
+```
+
+Get the current state of **Venus** (ID 2) relative to **Mercury** (ID 1) in the **ecliptic frame**:
+
+```
+let (stateVector, _) = try SPICE.getState(target: 2, reference: 1, frame: .eclipticJ2000) 
+```
+
+Get the current state and light time of the **Saturn Barycenter** relative to the **Sun** with **light time correction**:
+
+```
+let (stateVector, lightTime) = try SPICE.getState(target: "Saturn Barycenter", reference: "Sun", abcorr: .lightTime)
+```

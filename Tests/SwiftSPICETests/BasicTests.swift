@@ -10,8 +10,7 @@ extension SerializedSuite {
         // Basic test
         @Test("Basic test")
         func basicTest() async throws {
-            
-            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -27,8 +26,8 @@ extension SerializedSuite {
             }
             #expect(state1.distance > 1e+8)
             #expect(state1.distance < 2e+8)
-            #expect(state1.distance > 28)
-            #expect(state1.distance < 31)
+            #expect(state1.speed > 28)
+            #expect(state1.speed < 31)
             
             guard let (state2, _) = try? SPICE.getState(target: "Earth Barycenter", reference: "Solar System Barycenter") else {
                 #expect(Bool(false), "state is nil")
@@ -36,8 +35,8 @@ extension SerializedSuite {
             }
             #expect(state2.distance > 1e+8)
             #expect(state2.distance < 2e+8)
-            #expect(state2.distance > 28)
-            #expect(state2.distance < 31)
+            #expect(state2.speed > 28)
+            #expect(state2.speed < 31)
             
             let id1 = try SPICE.getObjectID(for: "Earth Barycenter")
             let id2 = try SPICE.getObjectID(for: "Solar System Barycenter")
@@ -55,7 +54,7 @@ extension SerializedSuite {
         // Test loading and unloading kernels
         @Test("Load and unload kernel")
         func testLoadAndUnloadKernel() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
                 return
             }
             
@@ -80,7 +79,7 @@ extension SerializedSuite {
         // Test retrieving state vector using names
         @Test("Get state using names")
         func testGetStateUsingNames() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -104,7 +103,7 @@ extension SerializedSuite {
         // Test kernel clearing
         @Test("Clear kernels")
         func testClearKernels() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
                 return
             }
             
@@ -112,6 +111,35 @@ extension SerializedSuite {
             try SPICE.clearKernels()
             
             #expect(SPICE.getLoadedObjectIDs().isEmpty, "Kernels not cleared properly")
+        }
+        
+        // Test examples from the readme
+        @Test("Readme test")
+        func readMeTest() async throws {
+            if let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") {
+                try SPICE.loadKernel(kernelURL.path)
+            }
+            if let leapsecondKernelURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") {
+                try SPICE.loadKernel(leapsecondKernelURL.path)
+            }
+
+            var (stateVector, _) = try SPICE.getState(target: 3, reference: 0)
+            (stateVector, _) = try SPICE.getState(target: "Earth Barycenter", reference: "Solar System Barycenter")
+
+            var date = Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 1))!
+            (stateVector, _) = try SPICE.getState(target: 5, reference: 10, time: date)
+            let _ = stateVector.distance
+            
+            date = Calendar.current.date(from: DateComponents(timeZone: TimeZone(abbreviation: "EDT"), year: 2024, month: 4, day: 8, hour: 14, minute: 30, second: 0))!
+            (stateVector, _) = try SPICE.getState(target: "Moon", reference: "Earth", time: date)
+            let _ = stateVector.speed
+            
+            (stateVector, _) = try SPICE.getState(target: 2, reference: 1, frame: .eclipticJ2000)
+            
+            (stateVector, _) = try SPICE.getState(target: "Saturn Barycenter", reference: "Sun", abcorr: .lightTime)
+
+            try SPICE.clearKernels()
+
         }
     }
 }
