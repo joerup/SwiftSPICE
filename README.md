@@ -11,7 +11,7 @@ To use **SwiftSPICE**, you'll need to load SPK (Spacecraft and Planet Kernel) fi
 
 ---
 
-## Setup
+# Setup
 
 Add **SwiftSPICE** to your Swift project:
 
@@ -31,7 +31,7 @@ Or, add the package directly in Xcode:
 
 ---
 
-## Usage
+# Usage
 
 Import `SwiftSPICE` into a Swift file:
 
@@ -66,7 +66,7 @@ try SPICE.clearKernels()
 
 ---
 
-## Other Examples
+# Other Examples
 
 Calculate the distance from **Jupiter Barycenter** (ID 5) to the **Sun** (ID 10) on `2025-01-01`:
 
@@ -98,3 +98,15 @@ Get the current state and light time of the **Saturn Barycenter** relative to th
 let (stateVector, lightTime) = try SPICE.getState(target: "Saturn Barycenter", reference: "Sun", abcorr: .lightTime)
 print("\(stateVector) \(lightTime)")
 ```
+
+---
+
+# Planetaria
+
+![Icon](https://www.joerup.com/images/planetaria/icon.png){ width=100px }
+
+SwiftSPICE was created for [Planetaria](https://planetaria.app/), an immersive Solar System simulator app that I developed. SwiftSPICE powers Planetaria’s ephemeris calculations by integrating NASA’s SPICE Toolkit into a Swift-native environment, and allows you to see planetary orbits both in real-time and in the past or future.
+
+![Header Image](https://www.joerup.com/images/planetaria/header.png)
+
+
