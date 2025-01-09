@@ -4,9 +4,9 @@
 
 The SPICE Toolkit, developed by NASA's Navigation and Ancillary Information Facility (NAIF), is widely used in space science and engineering applications. SwiftSPICE makes it easy to integrate these powerful capabilities directly into Swift-based apps and simulations.
 
-To use SwiftSPICE, you'll need to load SPK (Spacecraft and Planet Kernel) files, which contain ephemeris data for celestial bodies.
+To use **SwiftSPICE**, you'll need to load SPK (Spacecraft and Planet Kernel) files, which contain ephemeris data for celestial bodies.
 
--- 
+---
 
 ## Setup
 
@@ -20,11 +20,11 @@ dependencies: [
 ]
 ```
 
-Or, if you're using Xcode, you can add the package by selecting:
+Or, add the package directly in Xcode:
 
-**File > Add Packages**
-Enter the URL of the **SwiftSPICE** repository: `https://github.com/joerup/SwiftSPICE.git`
-Choose the latest version and add it to your project.
+- **File > Add Package Dependencies**
+- Enter the URL of the **SwiftSPICE** repository: `https://github.com/joerup/SwiftSPICE.git`
+- Choose the latest version and add it to your project.
 
 ---
 
@@ -61,7 +61,7 @@ When you're done, unload the kernels to free up memory and avoid conflicts:
 try SPICE.clearKernels()
 ```
 
---
+---
 
 ## Other Examples
 
@@ -70,7 +70,7 @@ Calculate the distance from **Jupiter Barycenter** (ID 5) to the **Sun** (ID 10)
 ```
 let date = Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 1))!
 let (stateVector, _) = try SPICE.getState(target: 5, reference: 10, time: date)
-let distance = stateVector.distance
+print(stateVector.distance)
 ```
 
 Find the speed of the **Moon** relative to **Earth** on `2024-04-08` at `2:30:00 PM EDT`:
@@ -78,17 +78,20 @@ Find the speed of the **Moon** relative to **Earth** on `2024-04-08` at `2:30:00
 ```
 let date = Calendar.current.date(from: DateComponents(timeZone: TimeZone(abbreviation: "EDT"), year: 2024, month: 4, day: 8, hour: 14, minute: 30, second: 0))!
 let (stateVector, _) = try SPICE.getState(target: "Moon", reference: "Earth", time: date)
-let speed = stateVector.speed
+print(stateVector.speed)
 ```
 
-Get the current state of **Venus** (ID 2) relative to **Mercury** (ID 1) in the **ecliptic frame**:
+Get the current XYZ position and velocity of **Venus** (ID 2) relative to **Mercury** (ID 1) in the **ecliptic frame**:
 
 ```
 let (stateVector, _) = try SPICE.getState(target: 2, reference: 1, frame: .eclipticJ2000) 
+print("\(stateVector.x) \(stateVector.y) \(stateVector.z)")
+print("\(stateVector.vx) \(stateVector.vy) \(stateVector.vz)")
 ```
 
 Get the current state and light time of the **Saturn Barycenter** relative to the **Sun** with **light time correction**:
 
 ```
 let (stateVector, lightTime) = try SPICE.getState(target: "Saturn Barycenter", reference: "Sun", abcorr: .lightTime)
+print("\(stateVector) \(lightTime)")
 ```

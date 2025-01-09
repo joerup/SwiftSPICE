@@ -128,19 +128,24 @@ extension SerializedSuite {
 
             var date = Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 1))!
             (stateVector, _) = try SPICE.getState(target: 5, reference: 10, time: date)
-            let _ = stateVector.distance
+            print(stateVector.distance)
             
             date = Calendar.current.date(from: DateComponents(timeZone: TimeZone(abbreviation: "EDT"), year: 2024, month: 4, day: 8, hour: 14, minute: 30, second: 0))!
             (stateVector, _) = try SPICE.getState(target: "Moon", reference: "Earth", time: date)
-            let _ = stateVector.speed
+            print(stateVector.speed)
             
             (stateVector, _) = try SPICE.getState(target: 2, reference: 1, frame: .eclipticJ2000)
+            print("\(stateVector.x) \(stateVector.y) \(stateVector.z)")
+            print("\(stateVector.vx) \(stateVector.vy) \(stateVector.vz)")
             
-            (stateVector, _) = try SPICE.getState(target: "Saturn Barycenter", reference: "Sun", abcorr: .lightTime)
+            var lightTime: Double
+            (stateVector, lightTime) = try SPICE.getState(target: "Saturn Barycenter", reference: "Sun", abcorr: .lightTime)
+            print("\(stateVector) \(lightTime)")
 
             try SPICE.clearKernels()
 
         }
+
     }
 }
 
