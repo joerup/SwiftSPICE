@@ -103,7 +103,7 @@ print("\(stateVector) \(lightTime)")
 
 # Planetaria
 
-<img src="https://www.joerup.com/images/planetaria/icon.png" alt="Icon" style="width: 24px; height: 24px;" />
+<img src="https://www.joerup.com/images/planetaria/icon.png" alt="Icon" style="width: 80px; height: 80px;" />
 
 SwiftSPICE was created for [Planetaria](https://planetaria.app/), an immersive Solar System simulator app that I developed. SwiftSPICE powers Planetaria’s ephemeris calculations by integrating NASA’s SPICE Toolkit into a Swift-native environment, and allows you to see planetary orbits both in real-time and in the past or future.
 
