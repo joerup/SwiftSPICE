@@ -8,7 +8,7 @@
 import SwiftSPICE
 import Foundation
 
-let kernelName = "de432s"
+let kernelName = "sample"
 
 guard CommandLine.argc >= 3 && CommandLine.argc <= 4 else {
     print("Usage: <targetID> <referenceID> [time]")

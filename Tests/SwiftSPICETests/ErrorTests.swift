@@ -25,7 +25,7 @@ extension SerializedSuite {
         // Test retrieving state without loading leapseconds
         @Test("Get state without loading leapseconds")
         func testGetStateNoLeapseconds() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             
@@ -126,7 +126,7 @@ extension SerializedSuite {
         // Test retrieving state with a valid kernel but missing data for the target
         @Test("Get state with missing target data")
         func testGetStateMissingTargetData() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -154,7 +154,7 @@ extension SerializedSuite {
         // Test retrieving state with a valid kernel but missing data for the reference
         @Test("Get state with missing reference data")
         func testGetStateMissingReferenceData() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -182,7 +182,7 @@ extension SerializedSuite {
         // Test retrieving state at an unsupported epoch
         @Test("Get state at unsupported epoch")
         func testGetStateUnsupportedEpoch() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -210,7 +210,7 @@ extension SerializedSuite {
         // Test loading the same kernel twice
         @Test("Load the same kernel twice")
         func testLoadSameKernelTwice() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             

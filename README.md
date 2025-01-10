@@ -7,7 +7,7 @@
 
 The SPICE Toolkit, developed by NASA's Navigation and Ancillary Information Facility (NAIF), is widely used in space science and engineering applications. SwiftSPICE makes it easy to integrate these powerful capabilities directly into Swift-based apps and simulations.
 
-To use **SwiftSPICE**, you'll need to load SPK (Spacecraft and Planet Kernel) files, which contain ephemeris data for celestial bodies.
+To use SwiftSPICE, you'll need to load SPK (Spacecraft and Planet Kernel) files, which contain ephemeris data for celestial bodies.
 
 ---
 
@@ -39,10 +39,10 @@ Import `SwiftSPICE` into a Swift file:
 import SwiftSPICE
 ```
 
-Before performing any calculations, load the necessary SPICE kernels. Load from an SPK file (e.g., `de432s.bsp`) and a leapsecond file (e.g., `naif0012.tls`):
+Before performing any calculations, load the necessary SPICE kernels. Load from an SPK file (e.g., `de430.bsp`) and a leapsecond file (e.g., `naif0012.tls`):
 
 ```
-if let kernelURL = Bundle.main.url(forResource: "de432s", withExtension: "bsp") {
+if let kernelURL = Bundle.main.url(forResource: "de430", withExtension: "bsp") {
     try SPICE.loadKernel(kernelURL.path)
 }
 if let leapsecondKernelURL = Bundle.main.url(forResource: "naif0012", withExtension: "tls") {
@@ -66,7 +66,7 @@ try SPICE.clearKernels()
 
 ---
 
-# Other Examples
+# Examples
 
 Calculate the distance from **Jupiter Barycenter** (ID 5) to the **Sun** (ID 10) on `2025-01-01`:
 
@@ -103,7 +103,9 @@ print("\(stateVector) \(lightTime)")
 
 # Planetaria
 
-SwiftSPICE was created for [Planetaria](https://planetaria.app/), an immersive Solar System simulator app that I developed. SwiftSPICE powers Planetaria’s ephemeris calculations by integrating NASA’s SPICE Toolkit into a Swift-native environment, and allows you to see planetary orbits both in real-time and in the past or future.
+SwiftSPICE was created for [Planetaria](https://planetaria.app/), an immersive Solar System simulator app that I developed. SwiftSPICE powers Planetaria’s ephemeris calculations by integrating NASA’s SPICE Toolkit into a Swift-native environment, allowing you to see planetary orbits both in real-time and in the past or future.
+
+[Download on the App Store](https://apps.apple.com/us/app/planetaria-space-simulator/id1546887479)
 
 ![Header Image](https://www.joerup.com/images/planetaria/preview1.png)
 

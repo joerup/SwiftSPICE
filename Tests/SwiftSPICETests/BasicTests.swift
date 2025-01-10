@@ -10,7 +10,7 @@ extension SerializedSuite {
         // Basic test
         @Test("Basic test")
         func basicTest() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -54,7 +54,7 @@ extension SerializedSuite {
         // Test loading and unloading kernels
         @Test("Load and unload kernel")
         func testLoadAndUnloadKernel() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             
@@ -79,7 +79,7 @@ extension SerializedSuite {
         // Test retrieving state vector using names
         @Test("Get state using names")
         func testGetStateUsingNames() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
@@ -103,7 +103,7 @@ extension SerializedSuite {
         // Test kernel clearing
         @Test("Clear kernels")
         func testClearKernels() async throws {
-            guard let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") else {
+            guard let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") else {
                 return
             }
             
@@ -116,7 +116,7 @@ extension SerializedSuite {
         // Test examples from the readme
         @Test("Readme test")
         func readMeTest() async throws {
-            if let kernelURL = Bundle.module.url(forResource: "de432s", withExtension: "bsp") {
+            if let kernelURL = Bundle.module.url(forResource: "sample", withExtension: "bsp") {
                 try SPICE.loadKernel(kernelURL.path)
             }
             if let leapsecondKernelURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") {
