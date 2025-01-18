@@ -82,7 +82,7 @@ public struct SPICE {
         if fileExtension == "bsp" {
             
             // Fetch object IDs
-            var ids = [SpiceInt](repeating: 0, count: 100)
+            var ids = [SpiceInt](repeating: 0, count: 500)
             var count: SpiceInt = 0
             getSPKObjectIDs(path, &ids, &count)
             
