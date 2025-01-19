@@ -231,5 +231,54 @@ extension SerializedSuite {
             #expect(SPICE.getLoadedObjectIDs().isEmpty, "Kernels were not cleared properly")
         }
         
+        // Test convertToEphemerisTime with an invalid date
+        @Test("Convert invalid Date to Ephemeris Time")
+        func testConvertToEphemerisTimeInvalidDate() async throws {
+            // Define an invalid date (e.g., February 30)
+            var dateComponents = DateComponents()
+            dateComponents.year = 2025
+            dateComponents.month = 2
+            dateComponents.day = 30
+            let calendar = Calendar(identifier: .gregorian)
+            guard let invalidDate = calendar.date(from: dateComponents) else {
+                #expect(Bool(true), "Invalid date correctly not created")
+                return
+            }
+            
+            // Attempt conversion, expecting failure
+            do {
+                _ = try SPICE.convertToEphemerisTime(invalidDate)
+                #expect(Bool(false), "Conversion should have failed for invalid date")
+            } catch {
+                #expect(Bool(true), "Conversion failed as expected with error: \(error)")
+            }
+        }
+
+        // Test convertFromEphemerisTime with an invalid ephemeris time
+        @Test("Convert Invalid Ephemeris Time to Date")
+        func testConvertFromEphemerisTimeInvalid() async throws {
+            // Define an invalid ephemeris time
+            let invalidEphemerisTime: Double = -.greatestFiniteMagnitude
+            
+            // Load necessary leapseconds kernel
+            guard let leapsecondsURL = Bundle.module.url(forResource: "naif0012", withExtension: "tls") else {
+                #expect(Bool(false), "Failed to locate naif0012.tls")
+                return
+            }
+            
+            try SPICE.loadKernel(leapsecondsURL.path)
+            
+            // Attempt conversion, expecting failure
+            do {
+                let _ = try SPICE.convertFromEphemerisTime(invalidEphemerisTime)
+                #expect(Bool(false), "Conversion should have failed for invalid ephemeris time")
+            } catch SPICEError.invalidEphemerisTime {
+                #expect(Bool(true), "Conversion failed as expected for invalid ephemeris time")
+            } catch {
+                #expect(Bool(false), "Unexpected error type: \(error)")
+            }
+            
+            try SPICE.clearKernels()
+        }
     }
 }

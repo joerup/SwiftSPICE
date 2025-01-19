@@ -150,7 +150,7 @@ public struct SPICE {
     /// - Parameters:
     ///   - target: The integer ID of the target object (e.g., a planet or moon).
     ///   - reference: The integer ID of the reference object (e.g., the Sun or Earth).
-    ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
+    ///   - epoch: Observer epoch, expressed as seconds past J2000 TDB, for which the state vector is to be retrieved..
     ///   - frame: The reference frame in which the state vector should be computed. Defaults to `.j2000`.
     ///   - abcorr: The aberration correction to apply. Defaults to `.none`.
     ///
@@ -161,17 +161,14 @@ public struct SPICE {
     /// - Throws:
     ///   - `SPICEError.invalidTime` if the time cannot be parsed correctly.
     ///   - `SPICEError.stateUnavailable` if no data is available for the state at the given epoch.
-    public static func getState(target: Int, reference: Int, time: Date = Date(), frame: ReferenceFrame = .j2000, abcorr: AberrationCorrection = .none) throws -> (StateVector, Double) {
+    public static func getState(target: Int, reference: Int, epoch: Double, frame: ReferenceFrame = .j2000, abcorr: AberrationCorrection = .none) throws -> (StateVector, Double) {
         _ = SPICE.initialize
         
-        // Convert Date to Ephemeris Time (ET)
-        let epoch = try convertToEphemerisTime(time)
-        
-        // Allocate memory safely using Swift arrays and pointers
+        // Allocate memory
         var stateArray = [SpiceDouble](repeating: 0.0, count: 6)
         var ltTime: SpiceDouble = 0.0
         
-        // Call SPICE's spkez_c function within safe memory boundaries
+        // Call spkez_c
         stateArray.withUnsafeMutableBufferPointer { statePtr in
             withUnsafeMutablePointer(to: &ltTime) { ltPtr in
                 spkez_c(
@@ -215,6 +212,60 @@ public struct SPICE {
     /// - Parameters:
     ///   - target: The name of the target object (e.g., "Earth", "Mars").
     ///   - reference: The name of the reference object (e.g., "Sun", "Moon").
+    ///   - epoch: Observer epoch, expressed as seconds past J2000 TDB, for which the state vector is to be retrieved..
+    ///   - frame: The reference frame in which the state vector should be computed. Defaults to `.j2000`.
+    ///   - abcorr: The aberration correction to apply. Defaults to `.none`.
+    ///
+    /// - Returns: A tuple containing:
+    ///   - `StateVector`: A `StateVector` struct with the position (x, y, z) in km and velocity (vx, vy, vz) in km/s of the target relative to the reference.
+    ///   - `Double`: The one-way light time in seconds.
+    ///
+    /// - Throws:
+    ///   - `SPICEError.invalidObjectName` if either of the provided object names does not correspond to a valid object.
+    ///   - `SPICEError.invalidTime` if the time cannot be parsed correctly.
+    ///   - `SPICEError.stateUnavailable` if no data is available for the state at the given epoch.
+    public static func getState(target: String, reference: String, epoch: Double, frame: ReferenceFrame = .j2000, abcorr: AberrationCorrection = .none) throws -> (StateVector, Double) {
+        // Resolve object IDs from names
+        let targetID = try getObjectID(for: target)
+        let referenceID = try getObjectID(for: reference)
+        
+        // Delegate to the main getState method
+        return try getState(target: targetID, reference: referenceID, epoch: epoch, frame: frame, abcorr: abcorr)
+    }
+    
+    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific time,
+    /// along with the one-way light time.
+    ///
+    /// - Parameters:
+    ///   - target: The integer ID of the target object (e.g., a planet or moon).
+    ///   - reference: The integer ID of the reference object (e.g., the Sun or Earth).
+    ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
+    ///   - frame: The reference frame in which the state vector should be computed. Defaults to `.j2000`.
+    ///   - abcorr: The aberration correction to apply. Defaults to `.none`.
+    ///
+    /// - Returns: A tuple containing:
+    ///   - `StateVector`: A `StateVector` struct with the position (x, y, z) in km and velocity (vx, vy, vz) in km/s of the target relative to the reference.
+    ///   - `Double`: The one-way light time in seconds.
+    ///
+    /// - Throws:
+    ///   - `SPICEError.invalidTime` if the time cannot be parsed correctly.
+    ///   - `SPICEError.stateUnavailable` if no data is available for the state at the given epoch.
+    public static func getState(target: Int, reference: Int, time: Date = Date(), frame: ReferenceFrame = .j2000, abcorr: AberrationCorrection = .none) throws -> (StateVector, Double) {
+        _ = SPICE.initialize
+        
+        // Convert Date to Ephemeris Time (ET)
+        let epoch = try convertToEphemerisTime(time)
+        
+        // Delegate to the main getState method
+        return try getState(target: target, reference: reference, epoch: epoch, frame: frame, abcorr: abcorr)
+    }
+    
+    /// Retrieves the state vector (position and velocity) of a target object relative to a reference object at a specific time,
+    /// along with the one-way light time.
+    ///
+    /// - Parameters:
+    ///   - target: The name of the target object (e.g., "Earth", "Mars").
+    ///   - reference: The name of the reference object (e.g., "Sun", "Moon").
     ///   - time: The time for which the state vector is to be retrieved. Defaults to the current time if not provided.
     ///   - frame: The reference frame in which the state vector should be computed. Defaults to `.j2000`.
     ///   - abcorr: The aberration correction to apply. Defaults to `.none`.
@@ -232,7 +283,7 @@ public struct SPICE {
         let targetID = try getObjectID(for: target)
         let referenceID = try getObjectID(for: reference)
         
-        // Delegate to the integer-based getState method
+        // Delegate to the main getState method
         return try getState(target: targetID, reference: referenceID, time: time, frame: frame, abcorr: abcorr)
     }
     
@@ -281,20 +332,12 @@ public struct SPICE {
         return Int(id)
     }
     
-    /// Retrieves the IDs of all objects currently loaded in kernels.
-    /// - Returns: A list of integer IDs of all currently loaded objects.
-    public static func getLoadedObjectIDs() -> [Int] {
-        return Array(kernelMap.keys)
-    }
-    
-    // MARK: - Private Helper Methods
-    
     /// Converts a `Date` object to SPICE Ephemeris Time (ET).
     ///
     /// - Parameter date: The date to convert.
-    /// - Returns: The corresponding ephemeris time as `SpiceDouble`.
+    /// - Returns: The corresponding ephemeris time.
     /// - Throws: `SPICEError.invalidTime` if conversion fails or if the leapseconds kernel is not loaded.
-    private static func convertToEphemerisTime(_ date: Date) throws -> SpiceDouble {
+    public static func convertToEphemerisTime(_ date: Date) throws -> Double {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MMM-dd HH:mm:ss.SSS"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
@@ -316,6 +359,51 @@ public struct SPICE {
         
         return et
     }
+    
+    /// Converts SPICE Ephemeris Time (ET) to a `Date` object.
+    ///
+    /// - Parameter ephemerisTime: The ephemeris time to convert.
+    /// - Returns: The corresponding `Date` object.
+    /// - Throws: `SPICEError.invalidEphemerisTime` if conversion fails or if the leapseconds kernel is not loaded.
+    public static func convertFromEphemerisTime(_ ephemerisTime: Double) throws -> Date {
+        // Buffer to hold the UTC time string returned by SPICE
+        var utcTimeBuffer = [CChar](repeating: 0, count: 64)
+        
+        // Convert ET to UTC time string using SPICE's et2utc_c
+        et2utc_c(ephemerisTime, "ISOC", 3, 64, &utcTimeBuffer)
+        
+        // Check for SPICE errors after conversion
+        do {
+            try checkSPICEError()
+        } catch {
+            throw SPICEError.invalidEphemerisTime(ephemerisTime)
+        }
+        
+        // Convert C string to Swift String
+        guard let utcTimeString = String(validatingUTF8: utcTimeBuffer) else {
+            throw SPICEError.invalidEphemerisTime(ephemerisTime)
+        }
+        
+        // Initialize DateFormatter to parse the UTC time string
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        // Convert the UTC time string to Date
+        guard let date = formatter.date(from: utcTimeString) else {
+            throw SPICEError.invalidEphemerisTime(ephemerisTime)
+        }
+        
+        return date
+    }
+    
+    /// Retrieves the IDs of all objects currently loaded in kernels.
+    /// - Returns: A list of integer IDs of all currently loaded objects.
+    public static func getLoadedObjectIDs() -> [Int] {
+        return Array(kernelMap.keys)
+    }
+    
+    // MARK: - Private Helper Methods
     
     /// Checks for any SPICE errors and throws a `CSPICEError.error` with the error message if any.
     ///
@@ -350,6 +438,7 @@ public enum SPICEError: Error, LocalizedError {
     case invalidObjectID(Int)
     case invalidObjectName(String)
     case invalidTime(Date)
+    case invalidEphemerisTime(Double)
     case stateUnavailable(target: Int, reference: Int, epoch: Double)
     
     public var errorDescription: String? {
@@ -366,6 +455,8 @@ public enum SPICEError: Error, LocalizedError {
             return "Invalid Object Name: \(name)"
         case .invalidTime(let date):
             return "Invalid Time: \(date) (Note: make sure a leapseconds kernel has been loaded)"
+        case .invalidEphemerisTime(let epoch):
+            return "Invalid Ephemeris Time: \(epoch) (Note: make sure a leapseconds kernel has been loaded)"
         case .stateUnavailable(let target, let reference, let epoch):
             return "Failed to get state for object ID \(target) with respect to object ID \(reference) at epoch \(epoch) (Note: make sure the appropriate kernels have been loaded)"
         }
